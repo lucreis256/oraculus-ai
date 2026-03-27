@@ -107,10 +107,6 @@ if arquivo:
 
     # ================= BLOQUEIO =================
 
-    st.warning("🔒 Desbloqueie para ver análises completas")
-
-    # ================= BLOQUEIO =================
-
     st.error("🚫 Análise completa bloqueada")
 
     st.markdown("""

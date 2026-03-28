@@ -30,6 +30,15 @@ def processar_dados(dados):
 
     dados = dados.rename(columns=mapa_colunas)
 
+    # ================= VALIDAÇÃO DE COLUNAS =================
+
+    colunas_obrigatorias = ["vendas", "produto"]
+    
+    faltando = [col for col in colunas_obrigatorias if col not in dados.columns]
+    
+    if faltando:
+        return f"Faltando colunas obrigatórias: {', '.join(faltando)}"
+    
     # 🔥 corrigir preço (string → float)
     if "preco" in dados.columns:
         dados["preco"] = (
@@ -88,10 +97,11 @@ if arquivo:
     dados_brutos = carregar_dados(arquivo)
     resultado = processar_dados(dados_brutos)
 
-    if resultado is None:
-        st.error("Dataset inválido")
+    if isinstance(resultado, str):
+        st.error(resultado)
+        st.info("Seu CSV precisa ter pelo menos: Quantity e Description")
         st.stop()
-
+    
     dados, vendas_tempo, vendas_produto = resultado
 
     total_vendas = dados["vendas"].sum()

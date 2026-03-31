@@ -181,6 +181,27 @@ if arquivo:
     
         st.stop()
     st.stop()
+    # ================= MODO ADMIN OCULTO =================
+
+    admin_mode = st.query_params.get("admin")
+    
+    if admin_mode == "1":
+        st.success("🔓 Modo admin ativado")
+    else:
+        # BLOQUEIO NORMAL
+        st.error("🚫 Análise completa bloqueada")
+    
+        st.markdown("""
+        ## 💰 Você está MUITO perto de descobrir onde ganhar dinheiro
+    
+        👉 Libere agora para ver tudo  
+        [🔥 Assinar agora](https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd)
+        """)
+    
+        st.warning("⏳ Quem age primeiro ganha mercado.")
+    
+        st.stop()
+    st.stop()
 
     # ================= CRESCIMENTO GERAL =================
     if vendas_tempo is not None and len(vendas_tempo) > 5:

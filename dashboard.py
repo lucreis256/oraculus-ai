@@ -126,9 +126,52 @@ if arquivo:
     col2.metric("🏆 Produto líder", top_produto)
     col3.metric("📊 Dominância", f"{participacao:.1f}%")
 
+        # KPI
+    col1, col2, col3 = st.columns(3)
+    ...
 
-   
+    # 👇 AQUI
+    if vendas_tempo is not None:
+        st.markdown("## 📈 Suas vendas ao longo do tempo")
+        st.line_chart(vendas_tempo)
+
+    # ================= BLOQUEIO =================
+
+    st.error("🚫 Análise completa bloqueada")
+
+    st.markdown(f"""
+    ## 💰 Você está perdendo dinheiro e nem percebeu
+
+    Seu negócio já tem sinais claros de crescimento.
+
+    Mas você ainda não viu:
+
+    🔥 Qual produto vai explodir  
+    💰 Quanto você pode faturar  
+    📈 Quanto investir  
+    🚀 Estratégia pronta para executar  
+
+    ---
+
+    ## ⚡ Libere agora:
+
+    - 📊 Ranking inteligente dos produtos
+    - 🔮 Previsão de vendas (IA)
+    - 💰 Estimativa de faturamento
+    - 🚀 Plano pronto (estoque, preço e tráfego)
+
+    ---
+
+    👉 **Sem isso, você está tomando decisões no escuro.**
     
+    """)
+
+    st.link_button(
+        "🔥 DESCOBRIR ONDE ESTOU PERDENDO DINHEIRO",
+        "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd"
+)
+    st.stop()
+
     # ================= CRESCIMENTO GERAL =================
     if vendas_tempo is not None and len(vendas_tempo) > 5:
         n = int(len(vendas_tempo) * 0.3)

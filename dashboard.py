@@ -129,36 +129,7 @@ if arquivo:
 
     # ================= BLOQUEIO =================
 
-    st.markdown(f"""
-    ## 💰 Você está MUITO perto de descobrir onde ganhar dinheiro
-
-    Seu negócio já tem sinais claros de crescimento.
-
-    Mas você ainda não viu:
-
-    🔥 Qual produto vai explodir  
-    💰 Quanto você pode faturar  
-    📈 Quanto investir  
-    🚀 Estratégia pronta para executar  
-
-    ---
-
-    ## ⚡ Libere agora:
-
-    - 📊 Ranking inteligente dos produtos
-    - 🔮 Previsão de vendas (IA)
-    - 💰 Estimativa de faturamento
-    - 🚀 Plano pronto (estoque, preço e tráfego)
-
-    ---
-
-    👉 **Sem isso, você está tomando decisões no escuro.**
     
-    st.warning("⏳ Quem age primeiro ganha mercado. Seus concorrentes não estão esperando.")
-    
-    [🔥 Assinar agora](https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd)
-    """)
-    # ================= MODO ADMIN OCULTO =================
 
     admin_mode = st.query_params.get("admin")
     
@@ -178,7 +149,7 @@ if arquivo:
         st.warning("⏳ Quem age primeiro ganha mercado.")
     
         st.stop()
-    st.stop()
+   
    
 
     # ================= CRESCIMENTO GERAL =================

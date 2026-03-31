@@ -129,8 +129,6 @@ if arquivo:
 
     # ================= BLOQUEIO =================
 
-    st.error("🚫 Análise completa bloqueada")
-
     st.markdown(f"""
     ## 💰 Você está MUITO perto de descobrir onde ganhar dinheiro
 

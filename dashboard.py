@@ -155,11 +155,12 @@ if arquivo:
     ---
 
     👉 **Sem isso, você está tomando decisões no escuro.**
-
+    
+    st.warning("⏳ Quem age primeiro ganha mercado. Seus concorrentes não estão esperando.")
+    
     [🔥 Assinar agora](https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd)
     """)
-    st.warning("⏳ Quem age primeiro ganha mercado. Seus concorrentes não estão esperando.")
-    st.stop()
+    
 
     # ================= CRESCIMENTO GERAL =================
     if vendas_tempo is not None and len(vendas_tempo) > 5:

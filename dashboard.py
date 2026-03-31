@@ -29,16 +29,15 @@ def processar_dados(dados):
     }
 
     dados = dados.rename(columns=mapa_colunas)
-
     # ================= VALIDAÇÃO DE COLUNAS =================
 
     colunas_obrigatorias = ["vendas", "produto"]
-    
+
     faltando = [col for col in colunas_obrigatorias if col not in dados.columns]
-    
+
     if faltando:
         return f"Faltando colunas obrigatórias: {', '.join(faltando)}"
-    
+
     # 🔥 corrigir preço (string → float)
     if "preco" in dados.columns:
         dados["preco"] = (
@@ -85,9 +84,21 @@ st.markdown('<p class="big-title">🔮 ORACULUS AI</p>', unsafe_allow_html=True)
 
 st.markdown("""
 <p class="subtitle">
-Descubra exatamente onde investir para vender mais.
+Descubra exatamente onde investir para ganhar mais dinheiro.
 </p>
 """, unsafe_allow_html=True)
+
+st.info("""
+🧠 Oraculus AI não mostra dados.
+
+Ele te diz exatamente:
+
+→ Onde investir  
+→ Quanto investir  
+→ O que fazer agora  
+
+Como um consultor de negócios automático.
+""")
 
 # ================= UPLOAD =================
 arquivo = st.file_uploader("Envie seu CSV de vendas")
@@ -101,7 +112,7 @@ if arquivo:
         st.error(resultado)
         st.info("Seu CSV precisa ter pelo menos: Quantity e Description")
         st.stop()
-    
+
     dados, vendas_tempo, vendas_produto = resultado
 
     total_vendas = dados["vendas"].sum()
@@ -115,22 +126,35 @@ if arquivo:
     col2.metric("🏆 Produto líder", top_produto)
     col3.metric("📊 Dominância", f"{participacao:.1f}%")
 
+
     # ================= BLOQUEIO =================
 
     st.error("🚫 Análise completa bloqueada")
 
-    st.markdown("""
-    ## 🔓 Desbloqueie o Oraculus AI
+    st.markdown(f"""
+    ## 💰 Você está MUITO perto de descobrir onde ganhar dinheiro
 
-    Você já viu o básico.  
-    Agora descubra *onde realmente investir para ganhar dinheiro.*
+    Seu negócio já tem sinais claros de crescimento.
 
-    👉 Tenha acesso a:
+    Mas você ainda não viu:
 
-    - 📊 Ranking dos melhores produtos  
-    - 🔮 Previsões de vendas  
-    - 💰 Estimativas de faturamento  
-    - 🚀 Estratégias automáticas  
+    🔥 Qual produto vai explodir  
+    💰 Quanto você pode faturar  
+    📈 Quanto investir  
+    🚀 Estratégia pronta para executar  
+
+    ---
+
+    ## ⚡ Libere agora:
+
+    - 📊 Ranking inteligente dos produtos
+    - 🔮 Previsão de vendas (IA)
+    - 💰 Estimativa de faturamento
+    - 🚀 Plano pronto (estoque, preço e tráfego)
+
+    ---
+
+    👉 **Sem isso, você está tomando decisões no escuro.**
 
     [🔥 Assinar agora](https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd)
     """)

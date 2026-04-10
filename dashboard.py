@@ -376,7 +376,7 @@ if arquivo:
         📈 Crescimento: {crescimento_p:.1f}%  
         💰 Faturamento potencial: +{faturamento_formatado} em {periodo_dias} dias 
         
-        🔮 Previsão (7 dias): {int(previsao)}
+        🔮 Previsão (7 dias): {int(previsao)} unidades vendidas
 
         🔥 Score: {score_oportunidade:.1f}/100  
         🤖 Confiança: {confianca:.0f}%

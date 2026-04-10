@@ -141,40 +141,29 @@ if arquivo:
 
     # ================= BLOQUEIO =================
 
-    st.error("🚫 Análise completa bloqueada")
+    # ================= BLOQUEIO CORRETO =================
 
-    st.markdown(f"""
-    ## 💰 Você está perdendo dinheiro e nem percebeu
+    query_params = st.experimental_get_query_params()
+    liberado = query_params.get("liberado", ["0"])[0] == "1"
 
-    Seu negócio já tem sinais claros de crescimento.
+    if not liberado:
+        st.error("🚫 Análise completa bloqueada")
 
-    Mas você ainda não viu:
+        st.markdown("""
+        ## 💰 Você está perdendo dinheiro e nem percebeu
 
-    🔥 Qual produto vai explodir  
-    💰 Quanto você pode faturar  
-    📈 Quanto investir  
-    🚀 Estratégia pronta para executar  
+        Libere a análise completa para ver:
+        - Ranking inteligente
+        - Previsões
+        - Plano de ação
+        """)
 
-    ---
+        st.link_button(
+            "🔥 DESBLOQUEAR AGORA",
+            "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd"
+        )
 
-    ## ⚡ Libere agora:
-
-    - 📊 Ranking inteligente dos produtos
-    - 🔮 Previsão de vendas (IA)
-    - 💰 Estimativa de faturamento
-    - 🚀 Plano pronto (estoque, preço e tráfego)
-
-    ---
-
-    👉 **Sem isso, você está tomando decisões no escuro.**
-    
-    """)
-
-    st.link_button(
-        "🔥 DESCOBRIR ONDE ESTOU PERDENDO DINHEIRO",
-        "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd"
-)
-    st.stop()
+        st.stop()
 
     # ================= CRESCIMENTO GERAL =================
     if vendas_tempo is not None and len(vendas_tempo) > 5:

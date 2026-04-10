@@ -143,8 +143,8 @@ if arquivo:
 
     # ================= BLOQUEIO CORRETO =================
 
-    query_params = st.experimental_get_query_params()
-    liberado = query_params.get("liberado", ["0"])[0] == "1"
+    query_params = st.query_params
+    liberado = query_params.get("liberado") == "1"
 
     if not liberado:
         st.error("🚫 Análise completa bloqueada")

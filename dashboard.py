@@ -411,124 +411,124 @@ Invista em **{melhor_produto}**
     st.bar_chart(vendas_produto.head(20))
 
     # ================= ASSISTENTE =================
-    st.divider()
-    st.subheader("🤖 Assistente ORACULUS")
+    #st.divider()
+    #st.subheader("🤖 Assistente ORACULUS")
 
-    col1, col2, col3, col4 = st.columns(4)
+    #col1, col2, col3, col4 = st.columns(4)
 
-    if col1.button("💰 Onde investir?"):
-        st.session_state.pergunta = "investir"
+    #if col1.button("💰 Onde investir?"):
+        #st.session_state.pergunta = "investir"
 
-    if col2.button("🏆 Produto líder"):
-        st.session_state.pergunta = "lider"
+    #if col2.button("🏆 Produto líder"):
+       #st.session_state.pergunta = "lider"
 
-    if col3.button("📈 Crescimento"):
-        st.session_state.pergunta = "crescimento"
+    #if col3.button("📈 Crescimento"):
+        #st.session_state.pergunta = "crescimento"
 
-    if col4.button("🚀 Melhorar vendas"):
-        st.session_state.pergunta = "melhorar"
+    #if col4.button("🚀 Melhorar vendas"):
+        #st.session_state.pergunta = "melhorar"
 
-    st.caption("💡 Clique nos botões para obter recomendações inteligentes")
+    #st.caption("💡 Clique nos botões para obter recomendações inteligentes")
 
 
-    pergunta = st.session_state.get("pergunta", "")
+    #pergunta = st.session_state.get("pergunta", "")
    
 
-    if pergunta:
+    #if pergunta:
 
-        if "invest" in pergunta:
+        #if "invest" in pergunta:
 
-            st.success(f"""
-        💰 Melhor escolha: {top3.index[0]}
+            #st.success(f"""
+        #💰 Melhor escolha: {top3.index[0]}
 
-        🏆 Top 3 investimentos:
+        #🏆 Top 3 investimentos:
 
-        1. {top3.index[0]} (crescimento: {crescimento_series[top3.index[0]]:.1f}%)
-        2. {top3.index[1]} (crescimento: {crescimento_series[top3.index[1]]:.1f}%)
-        3. {top3.index[2]} (crescimento: {crescimento_series[top3.index[2]]:.1f}%)
+        #1. {top3.index[0]} (crescimento: {crescimento_series[top3.index[0]]:.1f}%)
+        #2. {top3.index[1]} (crescimento: {crescimento_series[top3.index[1]]:.1f}%)
+        #3. {top3.index[2]} (crescimento: {crescimento_series[top3.index[2]]:.1f}%)
 
-        📊 Motivo:
-        - Alto volume + crescimento positivo
-        - Evita produtos em queda
+        #📊 Motivo:
+        #- Alto volume + crescimento positivo
+        #- Evita produtos em queda
 
-        🚀 Estratégia:
-        - Comece pelo primeiro
-        - Teste os outros
-        """)
+        #🚀 Estratégia:
+        #- Comece pelo primeiro
+        #- Teste os outros
+        #""")
 
-        elif "lider" in pergunta:
+        #elif "lider" in pergunta:
 
-            st.success(f"""
-🏆 Produto líder: {top_produto}
+            #st.success(f"""
+#🏆 Produto líder: {top_produto}
 
-📊 Dominância: {participacao:.1f}%
-""")
+#📊 Dominância: {participacao:.1f}%
+#""")
 
-        elif "cres" in pergunta:
+        #elif "cres" in pergunta:
 
-            st.success(f"""
-            📈 Análise de crescimento: {crescimento:.1f}%
+            #st.success(f"""
+            #📈 Análise de crescimento: {crescimento:.1f}%
 
-            📊 O que isso significa:
+            #📊 O que isso significa:
 
-            {"🚀 Forte crescimento — demanda acelerando" if crescimento > 10 else ""}
-            {"📈 Crescimento moderado — mercado saudável" if 3 < crescimento <= 10 else ""}
-            {"⚖️ Estável — sem tendência clara" if -3 <= crescimento <= 3 else ""}
-            {"📉 Queda — demanda enfraquecendo" if crescimento < -3 else ""}
+            #{"🚀 Forte crescimento — demanda acelerando" if crescimento > 10 else ""}
+            #{"📈 Crescimento moderado — mercado saudável" if 3 < crescimento <= 10 else ""}
+            #{"⚖️ Estável — sem tendência clara" if -3 <= crescimento <= 3 else ""}
+            #{"📉 Queda — demanda enfraquecendo" if crescimento < -3 else ""}
 
-            💡 Implicação prática:
+            #💡 Implicação prática:
 
-            {"🔥 Momento ideal para escalar investimento" if crescimento > 5 else ""}
-            {"🧪 Testar campanhas antes de escalar" if 0 < crescimento <= 5 else ""}
-            {"⚠️ Revisar estratégia urgente" if crescimento <= 0 else ""}
-            """)
+            #{"🔥 Momento ideal para escalar investimento" if crescimento > 5 else ""}
+            #{"🧪 Testar campanhas antes de escalar" if 0 < crescimento <= 5 else ""}
+            #{"⚠️ Revisar estratégia urgente" if crescimento <= 0 else ""}
+            #""")
 
-        elif "melhor" in pergunta:
-            crescimento_prod = crescimento_series[top3.index[0]]
+        #elif "melhor" in pergunta:
+            #crescimento_prod = crescimento_series[top3.index[0]]
 
             # 🔥 CLASSIFICAÇÃO
-            if crescimento_prod > q3:
-                nivel = "🔥 Crescimento muito alto"
-            elif crescimento_prod > q2:
-                nivel = "🚀 Crescimento forte"
-            elif crescimento_prod > q1:
-                nivel = "📈 Crescimento saudável"
-            elif crescimento_prod > 0:
-                nivel = "⚖️ Crescimento leve"
-            else:
-                nivel = "📉 Queda"
+            #if crescimento_prod > q3:
+                #nivel = "🔥 Crescimento muito alto"
+            #elif crescimento_prod > q2:
+                #nivel = "🚀 Crescimento forte"
+            #elif crescimento_prod > q1:
+               # nivel = "📈 Crescimento saudável"
+            #elif crescimento_prod > 0:
+               # nivel = "⚖️ Crescimento leve"
+            #else:
+               # nivel = "📉 Queda"
             # 📦 REGRA DE ESTOQUE
-            if crescimento_prod <= 0:
-                estoque_recomendado = "não aumentar estoque"
-            else:
-                estoque_base = min(max(crescimento_prod * 0.8, 10), 60)
-                estoque_recomendado = f"{int(estoque_base * 0.5)}% a {int(estoque_base)}%"    
+           # if crescimento_prod <= 0:
+              #  estoque_recomendado = "não aumentar estoque"
+           # else:
+                #estoque_base = min(max(crescimento_prod * 0.8, 10), 60)
+               # estoque_recomendado = f"{int(estoque_base * 0.5)}% a {int(estoque_base)}%"    
             
-            st.success(f"""
-            🚀 Plano para aumentar suas vendas
+           # st.success(f"""
+           # 🚀 Plano para aumentar suas vendas
 
-            🎯 Produto foco: {top3.index[0]}
+            #🎯 Produto foco: {top3.index[0]}
 
-            📊 Por que esse produto:
-            - Alto volume de vendas
-            - Crescimento: {crescimento_prod:.1f}%
-            - Classificação: {nivel}
+           # 📊 Por que esse produto:
+           # - Alto volume de vendas
+            #- Crescimento: {crescimento_prod:.1f}%
+           # - Classificação: {nivel}
 
-            💡 Estratégia prática:
+            #💡 Estratégia prática:
 
-            📦 Estoque:
-            - Aumentar estoque em {estoque_recomendado}
+            #📦 Estoque:
+            #- Aumentar estoque em {estoque_recomendado}
 
-            📢 Tráfego:
-            - Aumentar investimento em anúncios proporcional ao crescimento
+           # 📢 Tráfego:
+            #- Aumentar investimento em anúncios proporcional ao crescimento
 
-            💰 Conversão:
-            - Testar aumento de preço entre 5% e 10%
-            - Criar oferta com urgência (combo/desconto)
+           # 💰 Conversão:
+            #- Testar aumento de preço entre 5% e 10%
+            #- Criar oferta com urgência (combo/desconto)
 
-            🚀 Insight:
-            Produto com tendência de crescimento — escalar com controle
-            """)
+            #🚀 Insight:
+            #Produto com tendência de crescimento — escalar com controle
+            #""")
 
-        else:
-            st.warning("Pergunta não reconhecida")
+        #else:
+            #st.warning("Pergunta não reconhecida")

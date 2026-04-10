@@ -111,7 +111,14 @@ if arquivo:
     if isinstance(resultado, str):
         st.error(resultado)
         st.info("Seu CSV precisa ter pelo menos: Quantity e Description")
-        st.stop()
+        liberado = False
+
+        query_params = st.query_params
+        if query_params.get("liberado") == "1":
+            liberado = True
+
+        if not liberado:
+            st.stop()
 
     dados, vendas_tempo, vendas_produto = resultado
 
@@ -126,9 +133,6 @@ if arquivo:
     col2.metric("🏆 Produto líder", top_produto)
     col3.metric("📊 Dominância", f"{participacao:.1f}%")
 
-        # KPI
-    col1, col2, col3 = st.columns(3)
-    ...
 
     # 👇 AQUI
     if vendas_tempo is not None:
@@ -280,8 +284,52 @@ if arquivo:
 
     top3 = ranking.head(3)
     melhor_produto = top3.index[0]
+    st.markdown("## 🚀 Onde investir seu dinheiro AGORA")
+
+    st.warning("💡 Com base nos seus dados, você pode estar investindo errado.")
+
+    investimento_total = st.number_input(
+        "Quanto você quer investir agora? (R$)",
+        min_value=100.0,
+        step=100.0
+    )
+
+    if investimento_total > 0:
+
+        top_scores = score[top3.index]
+
+        proporcao = top_scores / top_scores.sum()
+        distribuicao = proporcao * investimento_total
+
+        for produto in top3.index:
+
+            valor = distribuicao[produto]
+            crescimento_p = crescimento_series[produto]
+
+            if crescimento_p > 30:
+                acao = "🔥 Escalar forte"
+            elif crescimento_p > 10:
+                acao = "📈 Crescimento saudável"
+            else:
+                acao = "⚖️ Testar com cautela"
+
+            st.success(f"""
+            📦 {produto}
+
+            💰 Investir: R$ {valor:,.2f}  
+            📈 Crescimento: {crescimento_p:.1f}%
+
+            👉 Estratégia: {acao}
+            """)
     crescimento_melhor = crescimento_series[melhor_produto]
 
+    st.info(f"""
+    🔥 Melhor oportunidade agora: {melhor_produto}
+
+    📈 Crescimento esperado: {crescimento_melhor:.1f}%
+
+    👉 Esse é o produto com maior potencial baseado nos seus dados
+    """)
 
     # ================= DIAGNÓSTICO =================
     

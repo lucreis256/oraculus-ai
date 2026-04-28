@@ -4,12 +4,21 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 
 # ================= ACESSO =================
-codigos_validos = [
-    "ORACULUS-1234",
-    "ORACULUS-5678",
-    "ORACULUS-ABCD",
-    "ORACULUS-PREMIUM"
-]
+import hashlib
+import datetime
+
+def gerar_codigo(base: str) -> str:
+    hash = hashlib.md5(base.encode()).hexdigest()[:8].upper()
+    return f"ORACULUS-{hash}"
+
+codigos_validos = set()
+
+def validar_codigo(codigo: str) -> bool:
+    # Aceita qualquer código no formato ORACULUS-XXXXXXXX
+    if not codigo.startswith("ORACULUS-"):
+        return False
+    parte = codigo.replace("ORACULUS-", "")
+    return len(parte) == 8 and parte.isalnum()
 
 # ================= CONFIG =================
 st.set_page_config(
@@ -126,7 +135,7 @@ if arquivo:
     codigo = st.text_input("🔑 Digite seu código de acesso", type="password")
 
     if codigo:
-        if codigo in codigos_validos:
+        if validar_codigo(codigo.upper().strip()):
             st.session_state.liberado = True
             st.success("✅ Acesso liberado")
         else:

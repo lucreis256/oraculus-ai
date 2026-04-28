@@ -3,12 +3,23 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
+# ================= ACESSO =================
+codigos_validos = [
+    "ORACULUS-1234",
+    "ORACULUS-5678",
+    "ORACULUS-ABCD",
+    "ORACULUS-PREMIUM"
+]
+
 # ================= CONFIG =================
 st.set_page_config(
     page_title="Oraculus AI",
     page_icon="🔮",
     layout="wide"
 )
+
+def formatar_moeda(valor):
+    return f"R\\$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 # ================= CACHE =================
 @st.cache_data
@@ -101,9 +112,27 @@ Como um consultor de negócios automático.
 """)
 
 # ================= UPLOAD =================
-arquivo = st.file_uploader("Envie seu CSV de vendas")
-
+arquivo = st.file_uploader("Analise seu negócio em segundos")
+if not arquivo:
+    st.stop()
+        
 if arquivo:
+
+    # ================= LOGIN POR CÓDIGO =================
+
+    if "liberado" not in st.session_state:
+        st.session_state.liberado = False
+
+    codigo = st.text_input("🔑 Digite seu código de acesso", type="password")
+
+    if codigo:
+        if codigo in codigos_validos:
+            st.session_state.liberado = True
+            st.success("✅ Acesso liberado")
+        else:
+            st.error("❌ Código inválido")
+
+    liberado = st.session_state.liberado
 
     dados_brutos = carregar_dados(arquivo)
     resultado = processar_dados(dados_brutos)
@@ -111,14 +140,9 @@ if arquivo:
     if isinstance(resultado, str):
         st.error(resultado)
         st.info("Seu CSV precisa ter pelo menos: Quantity e Description")
-        liberado = False
+        st.stop()
 
-        query_params = st.query_params
-        if query_params.get("liberado") == "1":
-            liberado = True
-
-        if not liberado:
-            st.stop()
+   # liberado = False
 
     dados, vendas_tempo, vendas_produto = resultado
 
@@ -130,7 +154,11 @@ if arquivo:
     # ================= KPI =================
     col1, col2, col3 = st.columns(3)
     col1.metric("💰 Total vendido", f"{int(total_vendas):,}")
-    col2.metric("🏆 Produto líder", top_produto)
+    if liberado:
+        col2.metric("🏆 Produto líder", top_produto)
+    else:
+        col2.metric("🏆 Produto líder", "🔒 ???")
+        
     col3.metric("📊 Dominância", f"{participacao:.1f}%")
 
 
@@ -138,32 +166,14 @@ if arquivo:
     if vendas_tempo is not None:
         st.markdown("## 📈 Suas vendas ao longo do tempo")
         st.line_chart(vendas_tempo)
+    st.warning("""
+    ⚠️ Existe um produto no seu negócio gerando crescimento acima da média.
 
-    # ================= BLOQUEIO =================
+    👉 Você provavelmente ainda não percebeu isso.
 
-    # ================= BLOQUEIO CORRETO =================
+    E isso pode estar te fazendo perder dinheiro.
+    """)
 
-    query_params = st.query_params
-    liberado = query_params.get("liberado") == "1"
-
-    if not liberado:
-        st.error("🚫 Análise completa bloqueada")
-
-        st.markdown("""
-        ## 💰 Você está perdendo dinheiro e nem percebeu
-
-        Libere a análise completa para ver:
-        - Ranking inteligente
-        - Previsões
-        - Plano de ação
-        """)
-
-        st.link_button(
-            "🔥 DESBLOQUEAR AGORA",
-            "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd"
-        )
-
-        st.stop()
 
     # ================= CRESCIMENTO GERAL =================
     if vendas_tempo is not None and len(vendas_tempo) > 5:
@@ -230,22 +240,92 @@ if arquivo:
 
         crescimento_produtos[produto] = crescimento_real
 
-    crescimento_series = pd.Series(crescimento_produtos)
 
-    q1 = crescimento_series.quantile(0.25)
-    q2 = crescimento_series.quantile(0.50)
-    q3 = crescimento_series.quantile(0.75)    
+       
 
 
     # ================= FILTRO INTELIGENTE =================
 
-    # remover produtos fracos
-    vendas_min = vendas_total.quantile(0.25)
-    validos = (crescimento_series > 0) & (vendas_total > vendas_min)
+    
 
     # ================= SCORE PROFISSIONAL (CORRETO E LIMPO) =================
 
     crescimento_series = pd.Series(crescimento_produtos)
+    # remover produtos fracos
+    vendas_min = vendas_total.quantile(0.25)
+    validos = (crescimento_series > 0) & (vendas_total > vendas_min)
+   
+    q1 = crescimento_series.quantile(0.25)
+    q2 = crescimento_series.quantile(0.50)
+    q3 = crescimento_series.quantile(0.75) 
+
+    # 🔥 ESTIMATIVA BASEADA EM DADOS REAIS
+
+    crescimentos_validos = crescimento_series[crescimento_series > 0]
+
+    if len(crescimentos_validos) > 0:
+        
+        crescimento_medio = crescimentos_validos.mean()
+        total_vendas = vendas_produto.sum()
+
+        perda_estimada = total_vendas * (crescimento_medio / 100)
+
+    else:
+        perda_estimada = vendas_produto.sum() * 0.10
+
+    st.error(f"""
+    💸 Oportunidade de crescimento não aproveitada:
+
+    ### R$ {perda_estimada:,.2f}
+
+    📅 Isso equivale a aproximadamente:
+    - R$ {perda_estimada/30:,.2f} por dia  
+    - R$ {perda_estimada/7:,.2f} por semana  
+
+    baseado no comportamento real dos seus produtos...
+
+    ⏳ Quanto mais você demora, mais isso acumula.
+    """)
+
+    top_crescimento = crescimento_series.sort_values(ascending=False).head(1)
+
+    if len(top_crescimento) > 0:
+        produto_exemplo = top_crescimento.index[0]
+        crescimento_exemplo = top_crescimento.iloc[0]
+
+        st.caption(f"""
+    📌 Exemplo: *{produto_exemplo}* está crescendo {crescimento_exemplo:.1f}%
+    """)
+    
+    if not liberado:
+        st.info("🔒 Análise completa bloqueada")
+
+        st.markdown("""
+        ## 🔓 Desbloqueie agora e veja exatamente onde investir
+
+        Você já tem produtos com potencial de crescimento.
+
+        Mas não está explorando isso da forma certa.
+
+        Desbloqueie agora para ver:
+
+        - 📊 Qual produto pode gerar mais lucro
+        - 📈 Quanto você pode faturar nos próximos dias
+        - 💰 Quanto investir em cada produto
+        - 🚀 Estratégia pronta para executar
+        """)
+
+        st.markdown("⏳ Quanto mais você demora, mais oportunidade você perde.")
+
+        st.link_button(
+            "🔥 DESBLOQUEAR AGORA",
+            "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd"
+        )
+
+        st.stop()
+
+    if not liberado:
+        st.stop()
 
     vendas_min = vendas_total.quantile(0.25)
     validos = (crescimento_series > 0) & (vendas_total > vendas_min)
@@ -288,11 +368,32 @@ if arquivo:
         top_scores = score[top3.index]
 
         proporcao = top_scores / top_scores.sum()
-        distribuicao = proporcao * investimento_total
+
+        reserva = investimento_total * 0.15
+        estoque_total = investimento_total * 0.50
+        trafego_total = investimento_total * 0.25
+        teste_total = investimento_total * 0.10
+
+        st.markdown("## 💰 Plano inteligente de alocação")
+
+        st.info(f"""
+        💼 Capital total: {formatar_moeda(investimento_total)}
+
+        📦 Estoque: {formatar_moeda(estoque_total)}  
+        📢 Tráfego: {formatar_moeda(trafego_total)}  
+        🧪 Testes: {formatar_moeda(teste_total)}  
+        🛡 Reserva: {formatar_moeda(reserva)}
+        """)
+
+        distribuicao_estoque = proporcao * estoque_total
+        distribuicao_trafego = proporcao * trafego_total
 
         for produto in top3.index:
 
-            valor = distribuicao[produto]
+            valor_estoque = distribuicao_estoque[produto]
+            
+            valor_trafego = distribuicao_trafego[produto]
+            
             crescimento_p = crescimento_series[produto]
 
             if crescimento_p > 30:
@@ -305,20 +406,52 @@ if arquivo:
             st.success(f"""
             📦 {produto}
 
-            💰 Investir: R$ {valor:,.2f}  
+            💰 Estoque: {formatar_moeda(valor_estoque)}  
+            📢 Tráfego: {formatar_moeda(valor_trafego)}  
             📈 Crescimento: {crescimento_p:.1f}%
 
             👉 Estratégia: {acao}
             """)
-    crescimento_melhor = crescimento_series[melhor_produto]
+        crescimento_melhor = crescimento_series[melhor_produto]
 
-    st.info(f"""
-    🔥 Melhor oportunidade agora: {melhor_produto}
+        taxa_retorno = max(0.15, crescimento_melhor / 100)
+        taxa_retorno = min(taxa_retorno, 0.80)
+        retorno_estimado = investimento_total * (1 + taxa_retorno)
+        lucro = retorno_estimado - investimento_total
+        lucro_dia = lucro / 30
+        lucro_mes = lucro
+        lucro_ano = lucro * 12
 
-    📈 Crescimento esperado: {crescimento_melhor:.1f}%
+        st.success(f"""
+        💰 Projeção de retorno:
 
-    👉 Esse é o produto com maior potencial baseado nos seus dados
+        📈 Investimento: {formatar_moeda(investimento_total)}  
+        🚀 Retorno estimado: {formatar_moeda(retorno_estimado)}  
+
+        💵 Lucro estimado:
+        - Diário: {formatar_moeda(lucro_dia)}
+        - Mensal: {formatar_moeda(lucro_mes)}
+        - Anual: {formatar_moeda(lucro_ano)}
+        """)
+
+    st.markdown(f"""
+    ## 💎 Oportunidade escondida no seu negócio
+
+    🔥 *Produto:* {melhor_produto}  
+    📈 Crescimento: {crescimento_melhor:.1f}%  
+
+    💰 Esse produto já está performando melhor que os outros  
+    👉 Você só ainda não percebeu isso
+
+    Se explorar corretamente, pode virar sua principal fonte de lucro.
     """)
+
+    volume_dados = len(dados)
+    fator_volume = min(1.0, volume_dados / 1000)
+    confianca_modelo = round(70 + (fator_volume * 20) + min(5, crescimento_melhor * 0.1), 0)
+    confianca_modelo = min(95, max(70, confianca_modelo))
+
+    st.caption(f"🤖 Confiança do modelo: {confianca_modelo:.0f}%")
 
     # ================= DIAGNÓSTICO =================
     
@@ -404,7 +537,8 @@ Invista em **{melhor_produto}**
     # ================= GRÁFICO =================
     if vendas_tempo is not None:
         st.markdown("## 📈 Evolução das vendas")
-        st.line_chart(vendas_tempo)
+        st.line_chart(vendas_tempo.head(10))
+       
 
     # ================= PRODUTOS =================
     st.markdown("## 📦 Produtos")

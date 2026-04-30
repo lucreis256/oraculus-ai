@@ -37,38 +37,21 @@ def carregar_dados(arquivo):
     dados.columns = dados.columns.str.lower()
     return dados
 
-@st.cache_data
-def processar_dados(dados):
+def processar_dados(dados, col_produto, col_vendas, col_preco=None, col_data=None):
+    dados = dados.rename(columns={
+        col_produto: "produto",
+        col_vendas: "vendas"
+    })
+    if col_preco:
+        dados = dados.rename(columns={col_preco: "preco"})
+    if col_data:
+        dados = dados.rename(columns={col_data: "data"})
 
-    mapa_colunas = {
-        "quantity": "vendas",
-        "description": "produto",
-        "unitprice": "preco",
-        "invoicedate": "data",
-        "date": "data"
-    }
-
-    dados = dados.rename(columns=mapa_colunas)
-    # ================= VALIDAÇÃO DE COLUNAS =================
-
-    colunas_obrigatorias = ["vendas", "produto"]
-
-    faltando = [col for col in colunas_obrigatorias if col not in dados.columns]
-
-    if faltando:
-        return f"Faltando colunas obrigatórias: {', '.join(faltando)}"
-
-    # 🔥 corrigir preço (string → float)
     if "preco" in dados.columns:
-        dados["preco"] = (
-            dados["preco"]
-            .astype(str)
-            .str.replace(",", ".", regex=False)
-        )
+        dados["preco"] = dados["preco"].astype(str).str.replace(",", ".", regex=False)
         dados["preco"] = pd.to_numeric(dados["preco"], errors="coerce")
         dados = dados.dropna(subset=["preco"])
-    if "vendas" not in dados.columns or "produto" not in dados.columns:
-        return None
+
 
     dados["vendas"] = pd.to_numeric(dados["vendas"], errors="coerce")
     dados = dados.dropna(subset=["vendas"])
@@ -88,7 +71,7 @@ def processar_dados(dados):
         vendas_tempo = None
 
     vendas_produto = dados.groupby("produto")["vendas"].sum().sort_values(ascending=False)
-
+    
     return dados, vendas_tempo, vendas_produto
 
 
@@ -131,20 +114,38 @@ if arquivo:
 
     if "liberado" not in st.session_state:
         st.session_state.liberado = False
-
-    codigo = st.text_input("🔑 Digite seu código de acesso", type="password")
-
-    if codigo:
-        if validar_codigo(codigo.upper().strip()):
-            st.session_state.liberado = True
-            st.success("✅ Acesso liberado")
-        else:
-            st.error("❌ Código inválido")
-
+    
     liberado = st.session_state.liberado
 
     dados_brutos = carregar_dados(arquivo)
-    resultado = processar_dados(dados_brutos)
+    
+    st.markdown("### 🗂️ Configure as colunas do seu arquivo")
+    colunas = list(dados_brutos.columns)
+    
+    col_produto = st.selectbox("Qual coluna é o nome do produto?", colunas)
+    col_vendas = st.selectbox("Qual coluna é a quantidade vendida?", colunas)
+    col_preco = st.selectbox("Qual coluna é o preço? (opcional)", ["Nenhuma"] + colunas)
+    col_data = st.selectbox("Qual coluna é a data? (opcional)", ["Nenhuma"] + colunas)
+    
+    if st.button("🔮 Analisar meu negócio"):
+        st.session_state.analisado = True
+        st.session_state.col_produto = col_produto
+        st.session_state.col_vendas = col_vendas
+        st.session_state.col_preco = col_preco
+        st.session_state.col_data = col_data
+
+    if not st.session_state.get("analisado"):
+        st.stop()
+
+    col_produto = st.session_state.col_produto
+    col_vendas = st.session_state.col_vendas
+    col_preco = st.session_state.col_preco
+    col_data = st.session_state.col_data
+
+    col_preco = None if col_preco == "Nenhuma" else col_preco
+    col_data = None if col_data == "Nenhuma" else col_data
+
+    resultado = processar_dados(dados_brutos, col_produto, col_vendas, col_preco, col_data)
 
     if isinstance(resultado, str):
         st.error(resultado)
@@ -249,6 +250,13 @@ if arquivo:
 
         crescimento_produtos[produto] = crescimento_real
 
+    # Se todos zerados, usa ranking por volume como fallback
+    if all(v == 0 for v in crescimento_produtos.values()):
+        vendas_list = vendas_total.sort_values(ascending=False)
+        n_produtos = len(vendas_list)
+        for i, (produto, _) in enumerate(vendas_list.items()):
+            crescimento_produtos[produto] = round(((n_produtos - i) / n_produtos) * 30, 1)
+
 
        
 
@@ -327,9 +335,21 @@ if arquivo:
         st.markdown("⏳ Quanto mais você demora, mais oportunidade você perde.")
 
         st.link_button(
-            "🔥 DESBLOQUEAR AGORA",
+            "🔥 DESBLOQUEAR AGORA — R$39,90",
             "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=634f1224b6ec4839b9c735fdb556ffdd"
         )
+
+        st.markdown("---")
+        ja_comprei = st.checkbox("Já comprei — quero inserir meu código")
+        if ja_comprei:
+            codigo = st.text_input("🔑 Código de acesso", type="password")
+            if codigo:
+                if validar_codigo(codigo.upper().strip()):
+                    st.session_state.liberado = True
+                    st.success("✅ Acesso liberado!")
+                    st.rerun()
+                else:
+                    st.error("❌ Código inválido. Verifique o email que recebeu.")
 
         st.stop()
 
@@ -374,7 +394,11 @@ if arquivo:
 
     if investimento_total > 0:
 
-        top_scores = score[top3.index]
+        if validos.sum() > 0:
+            top_scores = score[top3.index]
+        else:
+            top_scores = vendas_total[top3.index]
+            score = vendas_total
 
         proporcao = top_scores / top_scores.sum()
 

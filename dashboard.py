@@ -250,12 +250,7 @@ if arquivo:
 
         crescimento_produtos[produto] = crescimento_real
 
-    # Se todos zerados, usa ranking por volume como fallback
-    if all(v == 0 for v in crescimento_produtos.values()):
-        vendas_list = vendas_total.sort_values(ascending=False)
-        n_produtos = len(vendas_list)
-        for i, (produto, _) in enumerate(vendas_list.items()):
-            crescimento_produtos[produto] = round(((n_produtos - i) / n_produtos) * 30, 1)
+   
 
 
        
